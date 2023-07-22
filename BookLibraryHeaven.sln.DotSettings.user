@@ -1,0 +1,15 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=273388ac_002D0313_002D421f_002Dbb78_002D89356c800bdd/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsLocked="True" Name="All tests from &amp;lt;tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="D:\WorkSpaces\RiderProjects\booknet-havan" Presentation="&amp;lt;tests&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=81d73a55_002Dd748_002D4924_002Dbf2b_002D3ea22028707b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="HandlerMustReturnBookFromDb" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::07B3F9F2-1042-426D-A2DF-D49F66C7BE8E::net7.0::BusinessTests.Tests.Book.HandlerMustReturnBookFromDb&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::07B3F9F2-1042-426D-A2DF-D49F66C7BE8E::net7.0::BusinessTests.Tests.Book.HandlerMustCreateAddBook&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::07B3F9F2-1042-426D-A2DF-D49F66C7BE8E::net7.0::BusinessTests.Tests.Book.DeleteBookCommandHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::07B3F9F2-1042-426D-A2DF-D49F66C7BE8E::net7.0::BusinessTests.Tests.Review.CreateReviewCommandHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::07B3F9F2-1042-426D-A2DF-D49F66C7BE8E::net7.0::BusinessTests.Tests.Book.CreateBookCommandHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::07B3F9F2-1042-426D-A2DF-D49F66C7BE8E::net7.0::BusinessTests.Tests.Book.GetBookDetailedCommandHandler&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
