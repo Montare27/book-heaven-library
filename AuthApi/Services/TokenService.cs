@@ -1,7 +1,7 @@
 ﻿namespace AuthApi.Services
 {
+    using IdentityServer4.Validation;
     using Microsoft.IdentityModel.Tokens;
-    using Models;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Text;
@@ -18,32 +18,30 @@
 
         public string GenerateToken(List<Claim> claims)
         {
-            var jwtSecurityToken = new JwtSecurityToken(
-            header: new JwtHeader(
-                    signingCredentials: new SigningCredentials(
-                        algorithm: SecurityAlgorithms.HmacSha256,
-                        key: new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]!))
-                    )  
-                ),
-                payload: new JwtPayload(
-                    issuer: _configuration["Jwt:Issuer"],
-                    audience: _configuration["Jwt:Audience"],
-                    claims: claims,
-                    notBefore: DateTime.Now + TimeSpan.FromMinutes(15),
-                    expires: DateTime.Now + TimeSpan.FromMinutes(15)
-                )
-            );
 
-            var result = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-            return result;
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Issuer = _configuration["Jwt:Issuer"],
+                Audience = _configuration["Jwt:Audience"],
+                SigningCredentials =  new SigningCredentials
+                    (new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]!)),
+                SecurityAlgorithms.HmacSha256),
+                Expires = DateTime.Now + TimeSpan.FromMinutes(15)
+            };
+            
+            var jwt = new JwtSecurityTokenHandler().CreateToken(tokenDescriptor);
+            var token = new JwtSecurityTokenHandler().WriteToken(jwt);
+            return token;
         }
 
         public List<Claim> CreateClaims(ClaimsModel model)
         {
             var claims =  new List<Claim>(){
-                new Claim(ClaimTypes.Email, model.UserName),
-                new Claim(ClaimTypes.NameIdentifier, model.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, model.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, model.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("Id", model.Id.ToString()),
             };
 
             foreach (var role in model.Roles)

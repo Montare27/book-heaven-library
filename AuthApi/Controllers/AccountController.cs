@@ -12,14 +12,16 @@
         private readonly ITokenService _tokenService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(ITokenService tokenService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
+        public AccountController(ITokenService tokenService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger, RoleManager<IdentityRole> roleManager)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _roleManager = roleManager;
         }
 
         [HttpPost("Register")]
@@ -51,6 +53,11 @@
                 var errorString = result.Errors.Aggregate("", (s, error) => s + error.Description);
                 _logger.LogError("User was not registered. Reasons: \n" + errorString);
                 return BadRequest("User registration failed\n" + errorString);
+            }
+
+            if (await _roleManager.FindByNameAsync(UserRoles.User) == null)
+            {
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
             }
             
             await _userManager.AddToRoleAsync(user, UserRoles.User);
@@ -86,6 +93,11 @@
                 return BadRequest("User registration failed");
             }
             
+            if (await _roleManager.FindByNameAsync(UserRoles.Admin) == null)
+            {
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+            }
+            
             await _userManager.AddToRoleAsync(admin, UserRoles.Admin);
 
             return Ok("User registered");
@@ -103,10 +115,10 @@
 
             var result = await _signInManager
                 .PasswordSignInAsync(user, request.Password, request.RememberMe, false);
-            
+
             if (!result.Succeeded)
             {
-                _logger.LogError($"User login failed during signing in\nUser's input: UserName: {request.UserName}\nPassword {request.Password}\nRememberMe: {request.RememberMe}");
+                _logger.LogError($"User login failed during signing in\nUser's input: UserName: {request.UserName}\n");
                 return BadRequest("User login failed");
             }
 
@@ -118,11 +130,16 @@
             });
             var token = _tokenService.GenerateToken(claims);
             
-            HttpContext.Response.Cookies.Append("token", token);
-            
-            _logger.LogInformation("User login finished with success, cookies were sent");
+            _logger.LogInformation("User login finished with success, cookies were sent. Roles: " + 
+                                   roles.Aggregate("", (x, s)=>x + s));
             return Ok
-                ( new {username = user.UserName, role = roles} );
+                ( new {username = user.UserName, roles = roles, token = token} );
+        }
+
+        [HttpGet ("SignOut")]
+        public async Task SignOutAsync()
+        {
+            await _signInManager.SignOutAsync();
         }
     }
 }

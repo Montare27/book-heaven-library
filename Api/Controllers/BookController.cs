@@ -16,16 +16,29 @@
     public class BookController : ControllerBase
     {
         private readonly IMapper _mapper;
+        private readonly ILogger<BookController> _logger;
         private readonly IMediator _mediator;
         private readonly ICurrentUserService _userService;
 
-        public BookController( IMapper mapper, IMediator mediator, ICurrentUserService userService)
+        public BookController( IMapper mapper, IMediator mediator, ICurrentUserService userService, ILogger<BookController> logger)
         {
             _mapper = mapper;
             _mediator = mediator;
             _userService = userService;
+            _logger = logger;
         }
 
+        [HttpGet("CheckAuth")]
+        public IActionResult CheckAuth()
+        {
+            var result = new{
+                isAdmin = User.IsInRole("Admin"),
+                username = User.Identity?.Name ?? "empty",
+                id = User.Claims.FirstOrDefault(x=>x.Type.Equals("Id"))?.Value ?? "empty",
+            };
+            return Ok(result);
+        }
+        
         [HttpGet("GetAllBooks")]
         public async Task<IActionResult> GetAll()
         {
@@ -72,15 +85,18 @@
         }
 
         [HttpPost("CreateBook")]
-        public async Task<IActionResult> Create( CreateBookCommand model)
+        public async Task<IActionResult> Create( CreateBookCommand model)   
         {
+            _logger.LogInformation("Controller was activated: ");
             try
             {
                 var result = await _mediator.Send(model);
+                _logger.LogInformation("Book was created: ");
                 return Ok(result);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("Error: " + e.Message);
                 return BadRequest(e.Message);
             }
         }
@@ -91,10 +107,12 @@
             try
             {
                 var result = await _mediator.Send(model);
+                _logger.LogInformation("Book was updated: ");
                 return Ok(result);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("Error: " + e.Message);
                 return BadRequest(e.Message);
             }
         }

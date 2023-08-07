@@ -18,7 +18,8 @@
             get
             {
                 var id = _accessor.HttpContext?.User?
-                    .FindFirst(ClaimTypes.NameIdentifier);
+                    .Claims.FirstOrDefault(x => x.Type.Equals("Id"))?.Value;
+                
                 return string.IsNullOrEmpty(id?.ToString()) ? Guid.Empty : Guid.Parse(id.ToString());
             }
         }

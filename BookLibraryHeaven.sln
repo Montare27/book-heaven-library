@@ -19,8 +19,17 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CQRSTests", "CQRSTests\CQRSTests.csproj", "{07B3F9F2-1042-426D-A2DF-D49F66C7BE8E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BookApi", "BookApi", "{FA0B0FB7-E3C6-464D-B98F-A364B74A9925}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+		.dockerignore = .dockerignore
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityApi", "IdentityApi", "{FA4301FE-4508-48C3-BC76-CF635F161EF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D29DF11-CFC6-47F2-A3B5-8C4E795035D1}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

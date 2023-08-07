@@ -6,20 +6,15 @@
 
 /AuthApi/bin/
 /AuthApi/obj/
-/AuthApi/Properties/
 
 /Persistence/bin/
 /Persistence/obj/
-/Persistence/Properties/
 
 /Business/bin/
 /Business/obj/
-/Business/Properties/
 
 /Api/bin/
 /Api/obj/
-/Api/Properties/
 
 /Interfaces/bin/
 /Interfaces/obj/
-/Interfaces/Properties/

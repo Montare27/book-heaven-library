@@ -8,6 +8,7 @@
     using Interfaces;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
 
     public class CreateBookCommand : IRequest<int>
     {
@@ -30,18 +31,21 @@
     public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, int>
     {
         private readonly IBookDbContext _db;
+        private readonly ILogger<CreateBookCommandHandler> _logger;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _userService;
 
-        public CreateBookCommandHandler(IBookDbContext db, IMapper mapper, ICurrentUserService userService)
+        public CreateBookCommandHandler(IBookDbContext db, IMapper mapper, ICurrentUserService userService, ILogger<CreateBookCommandHandler> logger)
         {
             _db = db;
             _mapper = mapper;
             _userService = userService;
+            _logger = logger;
         }
 
         public async Task<int> Handle(CreateBookCommand request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Started Create Command");
             if (_userService.Id == Guid.Empty)
             {
                 throw new NotAccessedActionException(typeof(CreateBookCommandHandler), _userService.Id);

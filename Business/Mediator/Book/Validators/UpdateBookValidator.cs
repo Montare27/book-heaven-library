@@ -10,7 +10,7 @@
             RuleFor(x => x.BookDetails.Description)
                 .NotEmpty()
                 .MinimumLength(10)
-                .MaximumLength(200);
+                .MaximumLength(1000);
             
             RuleFor(x => x.BookDetails.Title)
                 .NotEmpty()

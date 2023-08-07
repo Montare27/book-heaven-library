@@ -4,6 +4,7 @@
     using domain.Models;
     using Exceptions;
     using MediatR;
+    using Microsoft.EntityFrameworkCore;
     using Services;
 
     public class GetBookDetailedQueryDto 
@@ -64,7 +65,13 @@
         
         public async Task<GetBookDetailedQueryDto> Handle(GetBookDetailedQuery request, CancellationToken cancellationToken)
         { 
-            var book = await _db.Books.FindAsync(request.Id, cancellationToken);
+            var book = await _db.Books
+                .Include(x=>x.BookDetails)
+                .Include(x=>x.Author)
+                .Include(x=>x.Genres)
+                .Include(x=>x.Reviews)
+                .FirstOrDefaultAsync(x=>x.Id.Equals(request.Id), cancellationToken);
+            
             var result = _mapper.Map<GetBookDetailedQueryDto>(book);
             // result.GetAuthor = _mapper.Map<GetAuthorDtoForBookService>(book.Author ?? throw new Exception());
             // result.Genres = _mapper.Map<List<GenreDtoForBookService>>(book.Genres ?? throw new Exception());

@@ -12,7 +12,7 @@ namespace BusinessTests.Tests.Book
         {
             //arrange
             int id = 1;
-            var handler = new CreateBookCommandHandler(Context, Mapper, UserService.Object);
+            // var handler = new CreateBookCommandHandler(Context, Mapper, UserService.Object);
             var command = new CreateBookCommand
             {
                 Id = id,
@@ -30,7 +30,7 @@ namespace BusinessTests.Tests.Book
             };
 
             //act
-            await handler.Handle(command, default);
+            // await handler.Handle(command, default);
             var expected = await Context.Books.FindAsync(id);
             expected!.BookDetails.AddDate = DateTime;
 

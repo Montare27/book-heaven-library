@@ -1,9 +1,11 @@
-using AuthApi.Extensions;
 using business;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using persistence;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +20,24 @@ builder.Services.AddCors(x =>
 builder.Services.AddAuthentication(authBuilder => {
         authBuilder.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         authBuilder.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        authBuilder.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddJwtAuthentication(
-    builder.Configuration["Jwt:Issuer"]!,
-    builder.Configuration["Jwt:Secret"]!,
-    new[]{builder.Configuration["Jwt:Audiences"]!});
+    .AddJwtBearer(jwtOptions => {
+        jwtOptions.RequireHttpsMetadata = false;
+        jwtOptions.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"]!,
+            ValidAudience = builder.Configuration["Jwt:Audience"]!,
+            IssuerSigningKey = new SymmetricSecurityKey
+                (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)),
+        };
+});
 
+builder.Services.AddAuthorization();
 
 builder.Services.AddPersistence(builder.Configuration);
 
@@ -46,6 +60,10 @@ builder.Services.AddSwaggerGen(c => {
 
 var app = builder.Build();
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions(){
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+});
+
 app.UseCors("Frontend");
 
 if (app.Environment.IsDevelopment())
@@ -60,6 +78,9 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/SaveList/swagger.json", "SaveList");
     });
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

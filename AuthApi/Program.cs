@@ -1,11 +1,12 @@
 using AuthApi;
 using AuthApi.Data;
-using AuthApi.Extensions;
 using AuthApi.Models;
 using AuthApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,25 +28,29 @@ builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddAuthentication(authBuilder => {
         authBuilder.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         authBuilder.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        authBuilder.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddJwtAuthentication(
-    builder.Configuration["Jwt:Issuer"]!,
-    builder.Configuration["Jwt:Secret"]!,
-    new[]{builder.Configuration["Jwt:Audiences"]!});
+    .AddJwtBearer(jwtOptions => {
+        jwtOptions.RequireHttpsMetadata = false;
+        jwtOptions.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"]!,
+            ValidAudience = builder.Configuration["Jwt:Audience"]!,
+            IssuerSigningKey = new SymmetricSecurityKey
+                (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)),
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(identityOptions => {
     identityOptions.Password.RequireDigit = true;
-    
 })
 .AddEntityFrameworkStores<UserDbContext>();
-
-builder.Services.ConfigureApplicationCookie(config => {
-    config.Cookie.HttpOnly = true;
-    config.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    config.Cookie.Name = "BookLibrary.AuthApi.Cookie";
-    config.LoginPath = "/Account/Login";
-    config.LogoutPath = "/Account/Logout";
-});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
